@@ -1,0 +1,16 @@
+creation_timestamp: 1777948452792
+current_stage: None
+deployment_job_state: null
+description: Baseline RandomForest (default params) for weekly
+last_updated_timestamp: 1777948452857
+model_id: m-4e1c8f33285544aa859ade99caac26e3
+name: GoldSight-Weekly-Predictor
+run_id: 7df04b04a9fb49ea8f0186f8895df1e9
+run_link: null
+source: models:/m-4e1c8f33285544aa859ade99caac26e3
+status: READY
+status_message: null
+storage_location: file:///d:/LAPORAN TUGAS/PBL/mlruns/626126335279740913/models/m-4e1c8f33285544aa859ade99caac26e3/artifacts
+user_id: null
+version: 2
+workspace: default

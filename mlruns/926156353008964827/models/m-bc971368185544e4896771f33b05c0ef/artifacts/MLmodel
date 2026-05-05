@@ -1,0 +1,23 @@
+artifact_path: file:///d:/LAPORAN TUGAS/PBL/mlruns/926156353008964827/models/m-bc971368185544e4896771f33b05c0ef/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.10.0
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.7.2
+    skops_trusted_types: null
+mlflow_version: 3.11.1
+model_id: m-bc971368185544e4896771f33b05c0ef
+model_size_bytes: 838054
+model_uuid: m-bc971368185544e4896771f33b05c0ef
+prompts: null
+run_id: 6766bf27b8d8451fa41fcf343ff8afa6
+utc_time_created: '2026-05-05 03:22:58.700767'

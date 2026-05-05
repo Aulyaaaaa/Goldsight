@@ -1,0 +1,10 @@
+artifact_location: file:///d:/LAPORAN TUGAS/PBL/mlruns/626126335279740913/models/m-4e1c8f33285544aa859ade99caac26e3/artifacts
+creation_timestamp: 1777948389403
+experiment_id: '626126335279740913'
+last_updated_timestamp: 1777948393776
+model_id: m-4e1c8f33285544aa859ade99caac26e3
+model_type: null
+name: model
+source_run_id: 7df04b04a9fb49ea8f0186f8895df1e9
+status: 2
+status_message: null

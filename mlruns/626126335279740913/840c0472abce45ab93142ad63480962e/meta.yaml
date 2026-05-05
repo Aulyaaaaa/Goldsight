@@ -1,0 +1,14 @@
+artifact_uri: file:///d:/LAPORAN TUGAS/PBL/mlruns/626126335279740913/840c0472abce45ab93142ad63480962e/artifacts
+end_time: 1777948374014
+entry_point_name: ''
+experiment_id: '626126335279740913'
+lifecycle_stage: active
+run_id: 840c0472abce45ab93142ad63480962e
+run_name: baseline_LinearRegression_daily
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1777948366975
+status: 3
+tags: []
+user_id: aulya

@@ -1,0 +1,14 @@
+artifact_uri: file:///d:/LAPORAN TUGAS/PBL/mlruns/926156353008964827/f31ae6a208d44aec83820f9346eef6b1/artifacts
+end_time: 1777951392707
+entry_point_name: ''
+experiment_id: '926156353008964827'
+lifecycle_stage: active
+run_id: f31ae6a208d44aec83820f9346eef6b1
+run_name: final_LinearRegression_weekly
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1777951388464
+status: 3
+tags: []
+user_id: aulya

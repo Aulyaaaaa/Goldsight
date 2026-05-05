@@ -1,0 +1,14 @@
+artifact_uri: file:///d:/LAPORAN TUGAS/PBL/mlruns/524597191944288077/6bb97d6703334ab888e7f904d80b3b5a/artifacts
+end_time: 1777951416967
+entry_point_name: ''
+experiment_id: '524597191944288077'
+lifecycle_stage: active
+run_id: 6bb97d6703334ab888e7f904d80b3b5a
+run_name: optuna_tuning_daily
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1777951345900
+status: 3
+tags: []
+user_id: aulya

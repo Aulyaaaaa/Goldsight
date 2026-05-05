@@ -1,0 +1,8 @@
+artifact_location: file:///d:/LAPORAN TUGAS/PBL/mlruns/524597191944288077
+creation_time: 1777948366776
+experiment_id: '524597191944288077'
+last_update_time: 1777948366776
+lifecycle_stage: active
+name: GoldSight-Optuna-Tuning
+trace_location: null
+workspace: default

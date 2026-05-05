@@ -1,0 +1,11 @@
+aliases:
+  baseline: '5'
+  candidate: '7'
+  champion: '8'
+creation_timestamp: 1777948452596
+deployment_job_id: null
+deployment_job_state: null
+description: null
+last_updated_timestamp: 1777951414142
+name: GoldSight-Weekly-Predictor
+workspace: default

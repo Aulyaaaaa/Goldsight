@@ -1,0 +1,14 @@
+artifact_uri: file:///d:/LAPORAN TUGAS/PBL/mlruns/524597191944288077/cbd7d50d3e3946faa51d1089b2048064/artifacts
+end_time: 1777948413483
+entry_point_name: ''
+experiment_id: '524597191944288077'
+lifecycle_stage: active
+run_id: cbd7d50d3e3946faa51d1089b2048064
+run_name: trial_8_RandomForest
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1777948413300
+status: 3
+tags: []
+user_id: aulya

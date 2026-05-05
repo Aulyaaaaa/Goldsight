@@ -1,0 +1,16 @@
+creation_timestamp: 1777951409609
+current_stage: None
+deployment_job_state: null
+description: Baseline LinearRegression for daily prediction
+last_updated_timestamp: 1777951409832
+model_id: m-e351c0d21d564badbaca50a0c2497869
+name: GoldSight-Daily-Predictor
+run_id: 4fd278e37e224a5e81a50a3f419e00bd
+run_link: null
+source: models:/m-e351c0d21d564badbaca50a0c2497869
+status: READY
+status_message: null
+storage_location: file:///d:/LAPORAN TUGAS/PBL/mlruns/626126335279740913/models/m-e351c0d21d564badbaca50a0c2497869/artifacts
+user_id: null
+version: 5
+workspace: default
