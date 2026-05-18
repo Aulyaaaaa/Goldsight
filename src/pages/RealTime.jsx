@@ -2,44 +2,29 @@ import { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
 export default function RealTime() {
-  // 1. STATE DIKOSONGKAN SECARA TOTAL (Tanpa Data Dummy)
+  // State Utama
+  const [allData, setAllData] = useState([]); // Menyimpan seluruh data mentah dari database
+  const [selectedWeight, setSelectedWeight] = useState(1); // Default awal menampilkan 1 gram
   const [hargaSaatIni, setHargaSaatIni] = useState(0);
   const [waktuUpdate, setWaktuUpdate] = useState('Menunggu server...');
   const [dataGrafik, setDataGrafik] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // State untuk MA dan Tren (Menunggu data dari BE)
+  // State untuk MA dan Tren
   const [ma7, setMa7] = useState(0);
   const [ma14, setMa14] = useState(0);
   const [statusTren, setStatusTren] = useState('MENUNGGU DATA');
 
-  // 2. FUNGSI OTOMATIS (Berjalan saat halaman dibuka)
+  // ============================================================
+  // EFFECT 1: Mengambil Data Mentah dari API Back-End
+  // ============================================================
   useEffect(() => {
     const ambilDataRealTime = async () => {
       try {
-        const response = await fetch('http://localhost:8000/gold-prices/');
-        
+        const response = await fetch('http://127.0.0.1:8000/gold-prices/');
         if (response.ok) {
           const dataMentah = await response.json();
-          
-          if (dataMentah.length > 0) {
-            const dataTerbaru = dataMentah[0];
-            setHargaSaatIni(dataTerbaru.sell_price);
-            
-            const tanggal = new Date(dataTerbaru.updated_at);
-            setWaktuUpdate(tanggal.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute:'2-digit' }));
-
-            // Mengolah data mentah menjadi format grafik
-            const dataUntukGrafik = dataMentah.slice(0, 14).reverse().map((item) => {
-              const dateObj = new Date(item.updated_at);
-              return {
-                tanggal: `${dateObj.getDate()}/${dateObj.getMonth() + 1}`,
-                aktual: item.sell_price,
-              };
-            });
-            
-            setDataGrafik(dataUntukGrafik);
-          }
+          setAllData(dataMentah); // Simpan semua data tanpa difilter dulu
         } else {
           setWaktuUpdate('Gagal menarik data dari server');
         }
@@ -54,13 +39,100 @@ export default function RealTime() {
     ambilDataRealTime();
   }, []);
 
+  // ============================================================
+  // EFFECT 2: Memproses & Menghitung Data Berdasarkan Gram Pilihan
+  // ============================================================
+  useEffect(() => {
+    if (allData.length === 0) return;
+
+    // 1. Filter data berdasarkan berat gram yang dipilih pengguna
+    const dataTerfilter = allData.filter(item => Number(item.weight) === Number(selectedWeight));
+
+    // Urutkan berdasarkan tanggal terbaru (descending) untuk mencari harga saat ini
+    dataTerfilter.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+
+    if (dataTerfilter.length > 0) {
+      // 2. Set Harga Saat Ini dan Waktu Terkini
+      const dataTerbaru = dataTerfilter[0];
+      setHargaSaatIni(Number(dataTerbaru.sell_price));
+      
+      const tanggal = new Date(dataTerbaru.updated_at);
+      setWaktuUpdate(tanggal.toLocaleDateString('id-ID', { 
+        day: 'numeric', month: 'long', year: 'numeric'
+      }));
+
+      // 3. Hitung Rata-rata Harga (Moving Average) 7 Hari dan 14 Hari
+      const hitungRataRata = (dataArray, rentangHari) => {
+        const dataSlice = dataArray.slice(0, rentangHari);
+        if (dataSlice.length === 0) return 0;
+        const total = dataSlice.reduce((sum, item) => sum + Number(item.sell_price), 0);
+        return Math.round(total / dataSlice.length);
+      };
+
+      const nilaiMa7 = hitungRataRata(dataTerfilter, 7);
+      const nilaiMa14 = hitungRataRata(dataTerfilter, 14);
+      setMa7(nilaiMa7);
+      setMa14(nilaiMa14);
+
+      // 4. Tentukan Status Tren Pasar berdasarkan MA
+      if (nilaiMa7 > nilaiMa14) {
+        setStatusTren('BULLISH (NAIK) 📈');
+      } else if (nilaiMa7 < nilaiMa14) {
+        setStatusTren('BEARISH (TURUN) 📉');
+      } else {
+        setStatusTren('SIDEWAYS (STABIL) ➡️');
+      }
+
+      // 5. Olah Data Historis untuk Komponen Grafik (Maksimal 14 baris terbaru)
+      const dataUntukGrafik = dataTerfilter.slice(0, 14).reverse().map((item) => {
+        const dateObj = new Date(item.updated_at);
+        return {
+          tanggal: `${dateObj.getDate()}/${dateObj.getMonth() + 1}`,
+          aktual: Number(item.sell_price),
+        };
+      });
+      setDataGrafik(dataUntukGrafik);
+    } else {
+      // Jika ukuran gram tertentu tidak ada datanya
+      setHargaSaatIni(0);
+      setMa7(0);
+      setMa14(0);
+      setStatusTren('DATA TIDAK TERSEDIA');
+      setDataGrafik([]);
+    }
+  }, [allData, selectedWeight]);
+
   return (
     <div className="space-y-6">
       
+      {/* TOOLBAR DROPDOWN FILTER GRAM */}
+      <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-base font-bold text-slate-800">Filter Analisis Real-Time</h2>
+          <p className="text-xs text-slate-500 mt-0.5">Sesuaikan visualisasi grafik dan nilai kalkulasi berdasarkan ukuran gram emas</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <label className="text-sm font-semibold text-slate-600">Pilih Ukuran Emas:</label>
+          <select 
+            value={selectedWeight} 
+            onChange={(e) => setSelectedWeight(Number(e.target.value))}
+            className="bg-white border border-slate-300 text-slate-700 py-1.5 px-3 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm font-bold cursor-pointer"
+          >
+            <option value={0.5}>0.5 Gram</option>
+            <option value={1}>1 Gram</option>
+            <option value={2}>2 Gram</option>
+            <option value={3}>3 Gram</option>
+            <option value={5}>5 Gram</option>
+          </select>
+        </div>
+      </div>
+      
+      {/* GRID KARTU INFORMASI UTAMA */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* KARTU HARGA REAL-TIME */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden">
           {isLoading && <div className="absolute inset-0 bg-white/70 backdrop-blur-sm z-10 flex items-center justify-center text-sm font-bold text-slate-500 animate-pulse">Menghubungkan ke Server...</div>}
-          <h3 className="text-sm font-medium text-slate-500 mb-2">Harga Emas Saat Ini</h3>
+          <h3 className="text-sm font-medium text-slate-500 mb-2">Harga Emas Saat Ini ({selectedWeight} Gram)</h3>
           <p className="text-3xl font-bold text-slate-800">
             {hargaSaatIni > 0 ? `Rp ${hargaSaatIni.toLocaleString('id-ID')}` : 'Rp 0'}
           </p>
@@ -69,32 +141,43 @@ export default function RealTime() {
           </div>
         </div>
 
+        {/* KARTU RATA-RATA HARGA 7 HARI */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-          <h3 className="text-sm font-medium text-slate-500 mb-2">Moving Average 7 Hari</h3>
-          <p className="text-3xl font-bold text-yellow-600">Rp {ma7}</p>
-          <p className="mt-4 text-xs text-slate-400">Menunggu kalkulasi dari server</p>
+          <h3 className="text-sm font-medium text-slate-500 mb-2">Rata-rata Harga dalam 7 Hari</h3>
+          <p className="text-3xl font-bold text-amber-600">
+            {ma7 > 0 ? `Rp ${ma7.toLocaleString('id-ID')}` : 'Rp 0'}
+          </p>
+          <p className="mt-4 text-xs text-slate-400">Rata-rata pergerakan jangka pendek</p>
         </div>
 
+        {/* KARTU RATA-RATA HARGA 14 HARI */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-          <h3 className="text-sm font-medium text-slate-500 mb-2">Moving Average 14 Hari</h3>
-          <p className="text-3xl font-bold text-slate-600">Rp {ma14}</p>
-          <p className="mt-4 text-xs text-slate-400">Menunggu kalkulasi dari server</p>
+          <h3 className="text-sm font-medium text-slate-500 mb-2">Rata-rata Harga dalam 14 Hari</h3>
+          <p className="text-3xl font-bold text-slate-600">
+            {ma14 > 0 ? `Rp ${ma14.toLocaleString('id-ID')}` : 'Rp 0'}
+          </p>
+          <p className="mt-4 text-xs text-slate-400">Rata-rata pergerakan jangka menengah</p>
         </div>
       </div>
 
+      {/* STATUS TREN PASAR */}
       <div className="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
         <div>
           <h3 className="text-sm font-bold text-slate-800">Status Tren Pasar</h3>
           <p className="text-xs text-slate-500 mt-1">Analisis otomatis berdasarkan Moving Average</p>
         </div>
-        <div className="px-4 py-2 bg-slate-100 text-slate-600 border border-slate-200 text-sm font-bold rounded-lg flex items-center tracking-wide">
+        <div className={`px-4 py-2 border text-sm font-bold rounded-lg flex items-center tracking-wide ${
+          statusTren.includes('BULLISH') ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+          statusTren.includes('BEARISH') ? 'bg-red-50 text-red-700 border-red-200' : 'bg-slate-100 text-slate-600 border-slate-200'
+        }`}>
           {statusTren}
         </div>
       </div>
 
+      {/* GRAFIK VISUALISASI */}
       <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
         <div className="mb-6">
-          <h3 className="text-base font-bold text-slate-800">Visualisasi Harga Emas</h3>
+          <h3 className="text-base font-bold text-slate-800">Visualisasi Harga Emas ({selectedWeight} Gram)</h3>
           <p className="text-sm text-slate-500 mt-1">Grafik menampilkan pergerakan harga aktual dari API Back-End</p>
         </div>
         <div className="h-80 w-full flex items-center justify-center bg-slate-50 rounded-lg border border-dashed border-slate-200">
@@ -105,17 +188,18 @@ export default function RealTime() {
               <LineChart data={dataGrafik} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                 <XAxis dataKey="tanggal" tick={{ fontSize: 12, fill: '#64748b' }} axisLine={false} tickLine={false} />
-                <YAxis domain={['auto', 'auto']} tick={{ fontSize: 12, fill: '#64748b' }} axisLine={false} tickLine={false} tickFormatter={(value) => `Rp${(value/1000)}k`} />
+                <YAxis domain={['auto', 'auto']} tick={{ fontSize: 12, fill: '#64748b' }} axisLine={false} tickLine={false} tickFormatter={(value) => `Rp${(value/1000).toLocaleString('id-ID')}k`} />
                 <Tooltip contentStyle={{ backgroundColor: '#ffffff', borderRadius: '8px', border: '1px solid #e2e8f0' }} formatter={(value) => [`Rp ${value.toLocaleString('id-ID')}`, 'Harga Aktual']} />
                 <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', paddingTop: '20px', color: '#475569' }} />
                 
-                <Line type="monotone" dataKey="aktual" name="Harga Aktual" stroke="#334155" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                <Line type="monotone" dataKey="aktual" name="Harga Aktual" stroke="#d97706" strokeWidth={2.5} dot={{ r: 4 }} activeDot={{ r: 6 }} />
               </LineChart>
             </ResponsiveContainer>
           )}
         </div>
       </div>
 
+      {/* RINGKASAN OTOMATIS */}
       <div className="grid grid-cols-1 gap-6">
         <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
           <div className="flex items-center gap-2 mb-4">
@@ -127,32 +211,32 @@ export default function RealTime() {
               <li className="text-slate-400 italic">Menunggu data terhubung untuk menghasilkan ringkasan otomatis...</li>
             ) : (
               <>
-                <li>Harga emas saat ini tercatat sebesar Rp {hargaSaatIni.toLocaleString('id-ID')}.</li>
-                <li>Data ditarik secara langsung dari basis data historis secara real-time.</li>
-                <li className="text-amber-600 italic">Catatan: Analisis tren dan Moving Average belum tersedia dari server untuk diringkas.</li>
+                <li>Harga emas ukuran <strong>{selectedWeight} Gram</strong> saat ini tercatat sebesar <strong>Rp {hargaSaatIni.toLocaleString('id-ID')}</strong>.</li>
+                <li>Rata-rata pergerakan harga jangka pendek (MA 7 Hari) berada pada nilai Rp {ma7.toLocaleString('id-ID')}.</li>
+                <li>Berdasarkan persilangan Moving Average, kondisi pasar saat ini berada dalam status <strong className="text-amber-600">{statusTren}</strong>.</li>
               </>
             )}
           </ul>
         </div>
         
-        {/* Metodologi tetap statis karena ini adalah panduan informasi */}
+        {/* METODOLOGI */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
           <div className="flex items-center gap-2 mb-5">
             <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
             <h3 className="text-base font-bold text-slate-800">Metodologi Analisis</h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 rounded-lg bg-slate-50 border border-slate-100">
-              <h4 className="text-sm font-bold text-slate-800 mb-1">Bullish</h4>
-              <p className="text-xs text-slate-500">MA7 &gt; MA14 dengan tren naik pada kedua MA</p>
+            <div className="p-4 rounded-lg bg-emerald-50 border border-emerald-100">
+              <h4 className="text-sm font-bold text-emerald-800 mb-1">Bullish</h4>
+              <p className="text-xs text-emerald-600/80">Kondisi di mana MA7 &gt; MA14. Menandakan tren harga cenderung naik.</p>
             </div>
             <div className="p-4 rounded-lg bg-red-50 border border-red-100">
               <h4 className="text-sm font-bold text-red-700 mb-1">Bearish</h4>
-              <p className="text-xs text-red-600/80">MA7 &lt; MA14 dengan tren turun pada kedua MA</p>
+              <p className="text-xs text-red-600/80">Kondisi di mana MA7 &lt; MA14. Menandakan tren harga cenderung turun.</p>
             </div>
             <div className="p-4 rounded-lg bg-slate-50 border border-slate-100">
               <h4 className="text-sm font-bold text-slate-800 mb-1">Sideways</h4>
-              <p className="text-xs text-slate-500">Kondisi selain bullish dan bearish, harga bergerak mendatar</p>
+              <p className="text-xs text-slate-500">Kondisi ketika nilai MA7 dan MA14 bernilai sama/mendatar.</p>
             </div>
           </div>
         </div>
