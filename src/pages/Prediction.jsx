@@ -37,8 +37,21 @@ export default function Prediction() {
         setStatusRekomendasi(dataBE.recommendation);
         
         const tanda = dataBE.predicted_delta > 0 ? '+' : '';
-        setSelisihHarga(`${tanda}${dataBE.predicted_delta} USD (${tanda}${dataBE.delta_pct}%)`);
+        setSelisihHarga(`${tanda}${dataBE.predicted_delta} Rupiah (${tanda}${dataBE.delta_pct}%)`);
         setAlasanRekomendasi(`Mesin memprediksi perubahan harga sebesar ${dataBE.delta_pct}% menuju target.`);
+
+        setDataGrafik([
+        {
+        tanggal: "Hari Ini",
+        aktual: dataBE.last_price,
+        prediksi: dataBE.last_price
+        },
+        {
+        tanggal: tanggalInput,
+        aktual: null,
+        prediksi: dataBE.predicted_price
+        }
+        ]);
         
       } else {
         alert("Server terhubung, tapi gagal memproses data.");
@@ -100,7 +113,7 @@ export default function Prediction() {
 
         <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
           <h3 className="text-sm font-medium text-slate-500 mb-2">Harga Hari Ini</h3>
-          <p className="text-3xl font-bold text-slate-800">${hargaHariIni}</p>
+          <p className="text-3xl font-bold text-slate-800">Rp.{hargaHariIni}</p>
           <p className="mt-4 text-xs text-slate-400">Menunggu respons dari server</p>
         </div>
 
@@ -108,7 +121,7 @@ export default function Prediction() {
           <div className="absolute left-0 top-0 bottom-0 w-1 bg-yellow-500"></div>
           <h3 className="text-sm font-medium text-slate-500 mb-2 pl-2">Harga Prediksi</h3>
           <div className="pl-2">
-            <p className="text-3xl font-bold text-yellow-600">${hargaPrediksi}</p>
+            <p className="text-3xl font-bold text-yellow-600">Rp.{hargaPrediksi}</p>
             <div className="mt-4 flex items-center gap-2">
               <span className="text-xs font-semibold px-2 py-1 rounded bg-slate-100 text-slate-500 border border-slate-200">
                 {selisihHarga}
