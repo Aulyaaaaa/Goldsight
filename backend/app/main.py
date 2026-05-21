@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware 
 
 from app.routes.prediction_routes import router as prediction_router
 from app.routes.recommendation_routes import router as recommendation_router
@@ -8,6 +9,18 @@ from app.routes.custom_prediction_routes import router as custom_prediction_rout
 app = FastAPI(
     title="GoldSight API",
     description="Gold prediction and recommendation API"
+)
+
+# ============================================================
+# CONFIGURATION CORS (SATPAM IZIN AKSES FRONT-END)
+# ============================================================
+# Bagian ini wajib ada agar React di localhost:5173 bisa mengambil data
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Mengizinkan semua domain/port mengakses API ini
+    allow_credentials=True,
+    allow_methods=["*"],  # Mengizinkan semua metode HTTP (GET, POST, OPTIONS, dll.)
+    allow_headers=["*"],  # Mengizinkan semua jenis headers
 )
 
 # ============================================================
@@ -42,7 +55,6 @@ app.include_router(
 # ============================================================
 @app.get("/")
 def root():
-
     return {
         "message": "GoldSight API is running"
     }
