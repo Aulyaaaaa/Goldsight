@@ -1,0 +1,23 @@
+# ENV
+backend/.env
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Logs
+backend/logs/
+
+# Virtual Environment
+gold_env/
+venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# VSCode
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
