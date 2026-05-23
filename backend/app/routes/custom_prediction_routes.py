@@ -1,5 +1,6 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+from datetime import datetime, timedelta
 
 from app.database import connect_db
 from app.prediction import load_models, load_historical, predict_price
@@ -17,52 +18,160 @@ class PredictionRequest(BaseModel):
 def custom_prediction(req: PredictionRequest):
 
     conn = connect_db()
+    cur = conn.cursor()
 
     try:
 
-        df = load_historical(
+        # ==========================================
+        # PARSE DATE
+        # ==========================================
+        target_date = datetime.strptime(
+            req.target_date,
+            "%d-%m-%Y"
+        ).date()
+
+        # ==========================================
+        # LATEST PREDICTION DATE
+        # ==========================================
+        cur.execute("""
+            SELECT MAX(prediction_date)
+            FROM predictions
+            WHERE weight = %s
+        """, (
             req.weight,
-            conn
+        ))
+
+        latest_prediction_date = cur.fetchone()[0]
+
+        today = datetime.today().date()
+
+        # ==========================================
+        # VALIDASI
+        # ==========================================
+        days = (target_date - today).days
+
+        if days < 1 or days > 14:
+
+            raise HTTPException(
+                status_code=400,
+                detail="Target date must be 1-14 days ahead"
+            )
+
+        # ==========================================
+        # MAIN PREDICTION
+        # ==========================================
+        cur.execute("""
+            SELECT
+                p.weight,
+                p.target_date,
+                p.predicted_price,
+                p.predicted_delta,
+                r.recommendation_type
+            FROM predictions p
+            LEFT JOIN recommendations r
+                ON p.id = r.prediction_id
+            WHERE p.weight = %s
+            AND p.prediction_date = %s
+            AND p.target_date = %s
+            ORDER BY p.target_date ASC
+            LIMIT 1
+        """, (
+            req.weight,
+            latest_prediction_date,
+            target_date,
+        ))
+
+        row = cur.fetchone()
+
+        if not row:
+
+            raise HTTPException(
+                status_code=404,
+                detail="Prediction not found"
+            )
+
+        # ==========================================
+        # CURRENT PRICE
+        # ==========================================
+        cur.execute("""
+            SELECT sell_price
+            FROM gold_prices
+            WHERE weight = %s
+            ORDER BY updated_at DESC
+            LIMIT 1
+        """, (
+            req.weight,
+        ))
+
+        price_row = cur.fetchone()
+
+        last_price = float(price_row[0])
+
+        # ==========================================
+        # DELTA PERCENTAGE
+        # ==========================================
+        delta_pct = round(
+            (float(row[3]) / last_price) * 100,
+            2
         )
 
-        result = predict_price(
-            df=df,
-            weight=req.weight,
-            target_date=req.target_date,
-            model=daily_model,
-            model_version="daily_linear_v1"
-        )
+        # ==========================================
+        # CHART DATA
+        # ==========================================
+        cur.execute("""
+            SELECT
+                target_date,
+                predicted_price
+            FROM predictions
+            WHERE weight = %s
+            AND prediction_date = %s
+            AND target_date BETWEEN %s AND %s
+            ORDER BY target_date ASC
+        """, (
+            req.weight,
+            latest_prediction_date,
+            latest_prediction_date,
+            target_date
+        ))
 
-        ma_sig = ma_signal(
-            result["ma_7"],
-            result["ma_14"]
-        )
+        chart_rows = cur.fetchall()
 
-        rec = generate_recommendation(
-            current_price=result["last_price"],
-            predicted_price=result["predicted_price"],
-            ma_sig=ma_sig
-        )
+        chart_data = []
+
+        for item in chart_rows:
+
+            chart_data.append({
+                "tanggal": item[0].strftime("%Y-%m-%d"),
+                "prediksi": float(item[1])
+            })
 
         return {
-            "weight": result["weight"],
-            "target_date": result["target_date"],
 
-            "last_price": result["last_price"],
+            "weight": row[0],
+
+            "target_date":
+                row[1].strftime("%Y-%m-%d"),
+
+            "last_price":
+                last_price,
 
             "predicted_price":
-                result["predicted_price"],
+                float(row[2]),
 
             "predicted_delta":
-                result["predicted_delta"],
-
-            "recommendation":
-                rec["recommendation"],
+                float(row[3]),
 
             "delta_pct":
-                rec["delta_pct"]
+                delta_pct,
+
+            "recommendation":
+                row[4],
+
+            "chart_data":
+                chart_data
         }
 
     finally:
 
+        cur.close()
         conn.close()
