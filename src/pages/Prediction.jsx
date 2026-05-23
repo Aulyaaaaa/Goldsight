@@ -19,11 +19,16 @@ export default function Prediction() {
   const handlePrediksi = async () => {
     setIsLoading(true);
     try {
+      const formattedDate = tanggalInput
+      .split("-")
+      .reverse()
+      .join("-")
+
       const response = await fetch('http://localhost:8000/predict/custom/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          target_date: tanggalInput,
+          target_date: formattedDate,
           weight: 1.0
         }),
       });
@@ -39,20 +44,22 @@ export default function Prediction() {
         const tanda = dataBE.predicted_delta > 0 ? '+' : '';
         setSelisihHarga(`${tanda}${dataBE.predicted_delta} Rupiah (${tanda}${dataBE.delta_pct}%)`);
         setAlasanRekomendasi(`Mesin memprediksi perubahan harga sebesar ${dataBE.delta_pct}% menuju target.`);
-
-        setDataGrafik([
+        
+        const chartWithToday = [
         {
         tanggal: "Hari Ini",
         aktual: dataBE.last_price,
         prediksi: dataBE.last_price
         },
-        {
-        tanggal: tanggalInput,
+        ...dataBE.chart_data.map(item => ({
+        tanggal: item.tanggal,
         aktual: null,
-        prediksi: dataBE.predicted_price
-        }
-        ]);
-        
+        prediksi: item.prediksi
+        }))
+        ]
+
+        setDataGrafik(chartWithToday)
+
       } else {
         alert("Server terhubung, tapi gagal memproses data.");
       }
@@ -149,7 +156,7 @@ export default function Prediction() {
                 <Tooltip contentStyle={{ backgroundColor: '#ffffff', borderRadius: '8px', border: '1px solid #e2e8f0' }} />
                 <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', paddingTop: '20px' }} />
                 <Line type="monotone" dataKey="aktual" name="Harga Aktual" stroke="#334155" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
-                <Line type="monotone" dataKey="prediksi" name="Harga Prediksi" stroke="#eab308" strokeWidth={2} strokeDasharray="5 5" dot={{ r: 4 }} />
+                <Line type="monotone" dataKey="prediksi" name="Harga Prediksi" stroke="#eab308" strokeWidth={2} dot={{ r: 4 }} />
               </LineChart>
             </ResponsiveContainer>
           )}
