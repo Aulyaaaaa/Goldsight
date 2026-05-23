@@ -27,7 +27,7 @@ def custom_prediction(req: PredictionRequest):
         # ==========================================
         target_date = datetime.strptime(
         req.target_date,
-        "%Y-%m-%d"
+        "%d-%m-%Y"
         ).date()
 
         # ==========================================
