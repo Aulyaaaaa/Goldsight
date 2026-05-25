@@ -1,0 +1,16 @@
+creation_timestamp: 1779697739222
+current_stage: None
+deployment_job_state: null
+description: Baseline LinearRegression for weekly prediction
+last_updated_timestamp: 1779697739986
+model_id: m-3f223b9c10714433ae92ddabf6d95470
+name: GoldSight-Weekly-Predictor
+run_id: 487213fdb361436898f0793624a3dfc4
+run_link: null
+source: models:/m-3f223b9c10714433ae92ddabf6d95470
+status: READY
+status_message: null
+storage_location: file:///d:/LAPORAN TUGAS/PBL/mlruns/626126335279740913/models/m-3f223b9c10714433ae92ddabf6d95470/artifacts
+user_id: null
+version: 37
+workspace: default

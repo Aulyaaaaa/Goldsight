@@ -1,0 +1,16 @@
+creation_timestamp: 1779697747099
+current_stage: None
+deployment_job_state: null
+description: Champion model for daily — lowest RMSE in final experiment
+last_updated_timestamp: 1779697748056
+model_id: m-77a69db68da4444a9c424a4f237cf59a
+name: GoldSight-Daily-Predictor
+run_id: 61cfa899e91a433b93d08eeb24c63afb
+run_link: null
+source: models:/m-77a69db68da4444a9c424a4f237cf59a
+status: READY
+status_message: null
+storage_location: file:///d:/LAPORAN TUGAS/PBL/mlruns/626126335279740913/models/m-77a69db68da4444a9c424a4f237cf59a/artifacts
+user_id: null
+version: 40
+workspace: default
