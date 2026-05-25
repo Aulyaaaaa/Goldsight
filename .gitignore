@@ -1,0 +1,22 @@
+# Virtual env
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Dataset
+*.csv
+
+# Zip
+*.zip
+
+# PDF
+*.pdf
+
+# Notebook checkpoint
+.ipynb_checkpoints/
+
+# Ignore random folders
+FIGMA/
+ML/
