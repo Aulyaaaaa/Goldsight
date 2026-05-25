@@ -89,6 +89,8 @@ export default function RealTime() {
         return {
           tanggal: `${dateObj.getDate()}/${dateObj.getMonth() + 1}`,
           aktual: Number(item.sell_price),
+          // Tempat untuk data prediksi dari Backend
+          prediksi: item.prediksi || null, 
         };
       });
       setDataGrafik(dataUntukGrafik);
@@ -189,10 +191,33 @@ export default function RealTime() {
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                 <XAxis dataKey="tanggal" tick={{ fontSize: 12, fill: '#64748b' }} axisLine={false} tickLine={false} />
                 <YAxis domain={['auto', 'auto']} tick={{ fontSize: 12, fill: '#64748b' }} axisLine={false} tickLine={false} tickFormatter={(value) => `Rp${(value/1000).toLocaleString('id-ID')}k`} />
-                <Tooltip contentStyle={{ backgroundColor: '#ffffff', borderRadius: '8px', border: '1px solid #e2e8f0' }} formatter={(value) => [`Rp ${value.toLocaleString('id-ID')}`, 'Harga Aktual']} />
+                <Tooltip contentStyle={{ backgroundColor: '#ffffff', borderRadius: '8px', border: '1px solid #e2e8f0' }} formatter={(value, name) => [`Rp ${Number(value).toLocaleString('id-ID')}`, name]} />
                 <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', paddingTop: '20px', color: '#475569' }} />
                 
-                <Line type="monotone" dataKey="aktual" name="Harga Aktual" stroke="#d97706" strokeWidth={2.5} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                {/* Garis Harga Aktual: Abu-abu Tua */}
+                <Line 
+                  type="monotone" 
+                  dataKey="aktual" 
+                  name="Harga Aktual" 
+                  stroke="#1F2937" 
+                  strokeWidth={4} 
+                  dot={{ fill: '#1F2937', strokeWidth: 2, r: 5 }} 
+                  activeDot={{ r: 8 }} 
+                  connectNulls={true}
+                />
+
+                {/* Garis Harga Prediksi: Kuning Emas Putus-putus */}
+                <Line 
+                  type="monotone" 
+                  dataKey="prediksi" 
+                  name="Harga Prediksi" 
+                  stroke="#F59E0B" 
+                  strokeWidth={3} 
+                  strokeDasharray="5 5" 
+                  dot={{ fill: '#F59E0B', r: 4 }} 
+                  activeDot={{ r: 6 }} 
+                  connectNulls={true}
+                />
               </LineChart>
             </ResponsiveContainer>
           )}
@@ -212,7 +237,7 @@ export default function RealTime() {
             ) : (
               <>
                 <li>Harga emas ukuran <strong>{selectedWeight} Gram</strong> saat ini tercatat sebesar <strong>Rp {hargaSaatIni.toLocaleString('id-ID')}</strong>.</li>
-                <li>Rata-rata pergerakan harga jangka pendek (MA 7 Hari) berada pada nilai Rp {ma7.toLocaleString('id-ID')}.</li>
+                <li>Rata-rata pergerakan harga jangka pendek (7 Hari) berada pada nilai Rp {ma7.toLocaleString('id-ID')}.</li>
                 <li>Berdasarkan persilangan Moving Average, kondisi pasar saat ini berada dalam status <strong className="text-amber-600">{statusTren}</strong>.</li>
               </>
             )}

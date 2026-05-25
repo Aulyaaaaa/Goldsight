@@ -120,7 +120,9 @@ export default function Prediction() {
 
         <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
           <h3 className="text-sm font-medium text-slate-500 mb-2">Harga Hari Ini</h3>
-          <p className="text-3xl font-bold text-slate-800">Rp.{hargaHariIni}</p>
+          <p className="text-3xl font-bold text-slate-800">
+            {hargaHariIni > 0 ? `Rp.${hargaHariIni.toLocaleString('id-ID')}` : 'Rp.0'}
+          </p>
           <p className="mt-4 text-xs text-slate-400">Menunggu respons dari server</p>
         </div>
 
@@ -128,7 +130,9 @@ export default function Prediction() {
           <div className="absolute left-0 top-0 bottom-0 w-1 bg-yellow-500"></div>
           <h3 className="text-sm font-medium text-slate-500 mb-2 pl-2">Harga Prediksi</h3>
           <div className="pl-2">
-            <p className="text-3xl font-bold text-yellow-600">Rp.{hargaPrediksi}</p>
+            <p className="text-3xl font-bold text-yellow-600">
+              {hargaPrediksi > 0 ? `Rp.${hargaPrediksi.toLocaleString('id-ID')}` : 'Rp.0'}
+            </p>
             <div className="mt-4 flex items-center gap-2">
               <span className="text-xs font-semibold px-2 py-1 rounded bg-slate-100 text-slate-500 border border-slate-200">
                 {selisihHarga}
@@ -142,7 +146,7 @@ export default function Prediction() {
       <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
         <div className="mb-6">
           <h3 className="text-base font-bold text-slate-800">Visualisasi Prediksi</h3>
-          <p className="text-sm text-slate-500 mt-1">Grafik menampilkan data aktual dan proyeksi prediksi hingga tanggal yang dipilih</p>
+          <p className="text-sm text-slate-500 mt-1">Grafik menampilkan data prediksi hingga tanggal yang dipilih</p>
         </div>
         <div className="h-80 w-full flex items-center justify-center bg-slate-50 rounded-lg border border-dashed border-slate-200">
           {dataGrafik.length === 0 ? (
@@ -152,11 +156,16 @@ export default function Prediction() {
               <LineChart data={dataGrafik} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                 <XAxis dataKey="tanggal" tick={{ fontSize: 12, fill: '#64748b' }} axisLine={false} tickLine={false} />
-                <YAxis domain={['auto', 'auto']} tick={{ fontSize: 12, fill: '#64748b' }} axisLine={false} tickLine={false} tickFormatter={(value) => `$${value}`} />
-                <Tooltip contentStyle={{ backgroundColor: '#ffffff', borderRadius: '8px', border: '1px solid #e2e8f0' }} />
-                <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', paddingTop: '20px' }} />
-                <Line type="monotone" dataKey="aktual" name="Harga Aktual" stroke="#334155" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
-                <Line type="monotone" dataKey="prediksi" name="Harga Prediksi" stroke="#eab308" strokeWidth={2} dot={{ r: 4 }} />
+                
+                {/* YAxis diformat menjadi Rupiah */}
+                <YAxis domain={['auto', 'auto']} tick={{ fontSize: 12, fill: '#64748b' }} axisLine={false} tickLine={false} tickFormatter={(value) => `Rp${(value/1000).toLocaleString('id-ID')}k`} />
+                
+                {/* Tooltip diformat menjadi Rupiah */}
+                <Tooltip contentStyle={{ backgroundColor: '#ffffff', borderRadius: '8px', border: '1px solid #e2e8f0' }} formatter={(value, name) => [`Rp ${Number(value).toLocaleString('id-ID')}`, name]} />
+                <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', paddingTop: '20px', color: '#475569' }} />
+              
+                {/* Garis Prediksi: Kuning Emas & Putus-putus */}
+                <Line type="monotone" dataKey="prediksi" name="Harga Prediksi" stroke="#F59E0B" strokeWidth={3} strokeDasharray="5 5" dot={{ fill: '#F59E0B', r: 4 }} activeDot={{ r: 6 }} connectNulls={true} />
               </LineChart>
             </ResponsiveContainer>
           )}
@@ -167,7 +176,7 @@ export default function Prediction() {
         <div className="flex justify-between items-start mb-6">
           <div>
             <h3 className="text-lg font-bold text-slate-800">Rekomendasi Investasi</h3>
-            <p className="text-xs text-slate-500">Berdasarkan hasil analisis mesin cerdas</p>
+            <p className="text-xs text-slate-500">Berdasarkan hasil analisis dari prediksi di atas.</p>
           </div>
           <div className="text-right">
             <div className={`inline-block px-6 py-2 border text-lg font-black rounded-lg tracking-widest ${
