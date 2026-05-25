@@ -1,11 +1,11 @@
 aliases:
-  baseline: '5'
-  candidate: '7'
-  champion: '8'
+  baseline: '33'
+  candidate: '35'
+  champion: '36'
 creation_timestamp: 1777948452596
 deployment_job_id: null
 deployment_job_state: null
 description: null
-last_updated_timestamp: 1777951414142
+last_updated_timestamp: 1779684078815
 name: GoldSight-Weekly-Predictor
 workspace: default

@@ -1,0 +1,14 @@
+artifact_uri: file:///d:/LAPORAN TUGAS/PBL/mlruns/524597191944288077/97e6673f58fb4495bff95127393c77c0/artifacts
+end_time: 1779683970418
+entry_point_name: ''
+experiment_id: '524597191944288077'
+lifecycle_stage: active
+run_id: 97e6673f58fb4495bff95127393c77c0
+run_name: trial_14_XGBoost
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1779683970129
+status: 3
+tags: []
+user_id: aulya

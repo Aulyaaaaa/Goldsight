@@ -1,0 +1,16 @@
+creation_timestamp: 1779423784524
+current_stage: None
+deployment_job_state: null
+description: Optuna-tuned best model for daily. Candidate for champion.
+last_updated_timestamp: 1779423784893
+model_id: m-bd4cf5f841dd4514856a5e4a80474378
+name: GoldSight-Daily-Predictor
+run_id: 6b35dcf8f41d447a99c5af493eb3afc9
+run_link: null
+source: models:/m-bd4cf5f841dd4514856a5e4a80474378
+status: READY
+status_message: null
+storage_location: file:///d:/LAPORAN TUGAS/PBL/mlruns/524597191944288077/models/m-bd4cf5f841dd4514856a5e4a80474378/artifacts
+user_id: null
+version: 15
+workspace: default

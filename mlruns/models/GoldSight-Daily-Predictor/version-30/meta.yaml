@@ -1,0 +1,16 @@
+creation_timestamp: 1779628390071
+current_stage: None
+deployment_job_state: null
+description: Baseline RandomForest (default params) for daily
+last_updated_timestamp: 1779628390899
+model_id: m-506f12105b3b432fba8a3711f6781195
+name: GoldSight-Daily-Predictor
+run_id: fa42750e89494fe4ad8131cc16029984
+run_link: null
+source: models:/m-506f12105b3b432fba8a3711f6781195
+status: READY
+status_message: null
+storage_location: file:///d:/LAPORAN TUGAS/PBL/mlruns/626126335279740913/models/m-506f12105b3b432fba8a3711f6781195/artifacts
+user_id: null
+version: 30
+workspace: default

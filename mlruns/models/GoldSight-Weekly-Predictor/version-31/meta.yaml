@@ -1,0 +1,16 @@
+creation_timestamp: 1779628395847
+current_stage: None
+deployment_job_state: null
+description: Optuna-tuned best model for weekly. Candidate for champion.
+last_updated_timestamp: 1779628396664
+model_id: m-6c9e264d62d443ed847701303149132e
+name: GoldSight-Weekly-Predictor
+run_id: 850d94e93934431ba38ef57f286d88d3
+run_link: null
+source: models:/m-6c9e264d62d443ed847701303149132e
+status: READY
+status_message: null
+storage_location: file:///d:/LAPORAN TUGAS/PBL/mlruns/524597191944288077/models/m-6c9e264d62d443ed847701303149132e/artifacts
+user_id: null
+version: 31
+workspace: default

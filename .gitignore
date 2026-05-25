@@ -1,0 +1,19 @@
+# Ignore everything
+*
+
+# Allow folders
+!eda_reports/
+!mlruns/
+!pkl_output/
+
+# Allow contents inside allowed folders
+!eda_reports/**
+!mlruns/**
+!pkl_output/**
+
+# Allow specific files
+!goldsight_mlflow.ipynb
+!mlflow.db
+
+# Keep gitignore itself
+!.gitignore

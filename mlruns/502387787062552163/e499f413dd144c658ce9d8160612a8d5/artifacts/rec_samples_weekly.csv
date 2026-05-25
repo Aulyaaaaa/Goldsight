@@ -1,0 +1,6 @@
+idx,base_price,pred_price,delta_pct,ma_signal,recommendation,reason
+0,3068000,3028508,-1.29,bullish,HOLD,"Prediksi mingguan harga turun moderat Rp 39,492/gram (-1.29%). Belum ada sinyal "
+1,3078000,3046807,-1.01,bullish,HOLD,"Prediksi mingguan harga turun moderat Rp 31,193/gram (-1.01%). Belum ada sinyal "
+2,3078000,3049393,-0.93,bullish,HOLD,"Prediksi mingguan harga turun moderat Rp 28,607/gram (-0.93%). Belum ada sinyal "
+3,3080000,3050780,-0.95,bullish,HOLD,"Prediksi mingguan harga turun moderat Rp 29,220/gram (-0.95%). Belum ada sinyal "
+4,3036000,3006749,-0.96,bearish,SELL,"Prediksi mingguan harga turun moderat Rp 29,251/gram (-0.96%). Belum ada sinyal "

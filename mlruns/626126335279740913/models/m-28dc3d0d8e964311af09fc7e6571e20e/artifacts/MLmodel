@@ -1,0 +1,22 @@
+artifact_path: file:///d:/LAPORAN TUGAS/PBL/mlruns/626126335279740913/models/m-28dc3d0d8e964311af09fc7e6571e20e/artifacts
+flavors:
+  python_function:
+    data: model.ubj
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.xgboost
+    python_version: 3.10.0
+  xgboost:
+    code: null
+    data: model.ubj
+    model_class: xgboost.sklearn.XGBRegressor
+    model_format: ubj
+    xgb_version: 3.2.0
+mlflow_version: 3.11.1
+model_id: m-28dc3d0d8e964311af09fc7e6571e20e
+model_size_bytes: 210360
+model_uuid: m-28dc3d0d8e964311af09fc7e6571e20e
+prompts: null
+run_id: 25ef43d875e34bfcab492a4af51f3ee8
+utc_time_created: '2026-05-11 06:07:29.664167'
