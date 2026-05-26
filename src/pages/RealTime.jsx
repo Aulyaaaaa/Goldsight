@@ -3,7 +3,10 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 
 export default function RealTime() {
   // State Utama
-  const [allData, setAllData] = useState([]); // Menyimpan seluruh data mentah dari database
+  const [allData, setAllData] = useState({
+    historis: [],
+    validasi: []
+  }); // Menyimpan seluruh data mentah dari database
   const [selectedWeight, setSelectedWeight] = useState(1); // Default awal menampilkan 1 gram
   const [hargaSaatIni, setHargaSaatIni] = useState(0);
   const [waktuUpdate, setWaktuUpdate] = useState('Menunggu server...');
@@ -21,10 +24,15 @@ export default function RealTime() {
   useEffect(() => {
     const ambilDataRealTime = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:8000/gold-prices/');
-        if (response.ok) {
-          const dataMentah = await response.json();
-          setAllData(dataMentah); // Simpan semua data tanpa difilter dulu
+        const responseGold = await fetch('http://127.0.0.1:8000/gold-prices/');
+        const responsePrediction = await fetch(`http://127.0.0.1:8000/predictions/validation?weight=${selectedWeight}`);
+        if (responseGold.ok && responsePrediction.ok) {
+          const dataMentah = await responseGold.json();
+          const dataPrediksi = await responsePrediction.json();
+          setAllData({
+            historis: dataMentah,
+            validasi: dataPrediksi
+        }); // Simpan semua data tanpa difilter dulu
         } else {
           setWaktuUpdate('Gagal menarik data dari server');
         }
@@ -37,16 +45,16 @@ export default function RealTime() {
     };
 
     ambilDataRealTime();
-  }, []);
+  }, [selectedWeight]);
 
   // ============================================================
   // EFFECT 2: Memproses & Menghitung Data Berdasarkan Gram Pilihan
   // ============================================================
   useEffect(() => {
-    if (allData.length === 0) return;
+    if (allData.historis.length === 0) return;
 
     // 1. Filter data berdasarkan berat gram yang dipilih pengguna
-    const dataTerfilter = allData.filter(item => Number(item.weight) === Number(selectedWeight));
+    const dataTerfilter = allData.historis.filter(item => Number(item.weight) === Number(selectedWeight));
 
     // Urutkan berdasarkan tanggal terbaru (descending) untuk mencari harga saat ini
     dataTerfilter.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
@@ -84,16 +92,14 @@ export default function RealTime() {
       }
 
       // 5. Olah Data Historis untuk Komponen Grafik (Maksimal 14 baris terbaru)
-      const dataUntukGrafik = dataTerfilter.slice(0, 14).reverse().map((item) => {
-        const dateObj = new Date(item.updated_at);
-        return {
-          tanggal: `${dateObj.getDate()}/${dateObj.getMonth() + 1}`,
-          aktual: Number(item.sell_price),
-          // Tempat untuk data prediksi dari Backend
-          prediksi: item.prediksi || null, 
-        };
-      });
+      const dataUntukGrafik = (allData.validasi || []).map((item) => ({
+        tanggal: item.tanggal,
+        aktual: Number(item.aktual),
+        prediksi: Number(item.prediksi)
+      }));
+
       setDataGrafik(dataUntukGrafik);
+
     } else {
       // Jika ukuran gram tertentu tidak ada datanya
       setHargaSaatIni(0);
