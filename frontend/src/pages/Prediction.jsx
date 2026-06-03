@@ -24,7 +24,7 @@ export default function Prediction() {
       .reverse()
       .join("-")
 
-      const response = await fetch('http://localhost:8000/predict/custom/', {
+      const response = await fetch('https://goldsight-production.up.railway.app/predict/custom/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

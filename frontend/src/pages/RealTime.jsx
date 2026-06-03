@@ -24,15 +24,15 @@ export default function RealTime() {
   useEffect(() => {
     const ambilDataRealTime = async () => {
       try {
-        const responseGold = await fetch('http://127.0.0.1:8000/gold-prices/');
-        const responsePrediction = await fetch(`http://127.0.0.1:8000/predictions/validation?weight=${selectedWeight}`);
+        const responseGold = await fetch('https://goldsight-production.up.railway.app/gold-prices/');
+        const responsePrediction = await fetch(`https://goldsight-production.up.railway.app/predictions/validation?weight=${selectedWeight}`);
         if (responseGold.ok && responsePrediction.ok) {
           const dataMentah = await responseGold.json();
           const dataPrediksi = await responsePrediction.json();
           setAllData({
             historis: dataMentah,
             validasi: dataPrediksi
-        }); // Simpan semua data tanpa difilter dulu
+          }); // Simpan semua data tanpa difilter dulu
         } else {
           setWaktuUpdate('Gagal menarik data dari server');
         }
@@ -63,9 +63,9 @@ export default function RealTime() {
       // 2. Set Harga Saat Ini dan Waktu Terkini
       const dataTerbaru = dataTerfilter[0];
       setHargaSaatIni(Number(dataTerbaru.sell_price));
-      
+
       const tanggal = new Date(dataTerbaru.updated_at);
-      setWaktuUpdate(tanggal.toLocaleDateString('id-ID', { 
+      setWaktuUpdate(tanggal.toLocaleDateString('id-ID', {
         day: 'numeric', month: 'long', year: 'numeric'
       }));
 
@@ -112,7 +112,7 @@ export default function RealTime() {
 
   return (
     <div className="space-y-6">
-      
+
       {/* TOOLBAR DROPDOWN FILTER GRAM */}
       <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
@@ -121,8 +121,8 @@ export default function RealTime() {
         </div>
         <div className="flex items-center gap-3">
           <label className="text-sm font-semibold text-slate-600">Pilih Ukuran Emas:</label>
-          <select 
-            value={selectedWeight} 
+          <select
+            value={selectedWeight}
             onChange={(e) => setSelectedWeight(Number(e.target.value))}
             className="bg-white border border-slate-300 text-slate-700 py-1.5 px-3 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm font-bold cursor-pointer"
           >
@@ -134,7 +134,7 @@ export default function RealTime() {
           </select>
         </div>
       </div>
-      
+
       {/* GRID KARTU INFORMASI UTAMA */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* KARTU HARGA REAL-TIME */}
@@ -174,10 +174,9 @@ export default function RealTime() {
           <h3 className="text-sm font-bold text-slate-800">Status Tren Pasar</h3>
           <p className="text-xs text-slate-500 mt-1">Analisis otomatis berdasarkan Moving Average</p>
         </div>
-        <div className={`px-4 py-2 border text-sm font-bold rounded-lg flex items-center tracking-wide ${
-          statusTren.includes('BULLISH') ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+        <div className={`px-4 py-2 border text-sm font-bold rounded-lg flex items-center tracking-wide ${statusTren.includes('BULLISH') ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
           statusTren.includes('BEARISH') ? 'bg-red-50 text-red-700 border-red-200' : 'bg-slate-100 text-slate-600 border-slate-200'
-        }`}>
+          }`}>
           {statusTren}
         </div>
       </div>
@@ -190,38 +189,38 @@ export default function RealTime() {
         </div>
         <div className="h-80 w-full flex items-center justify-center bg-slate-50 rounded-lg border border-dashed border-slate-200">
           {dataGrafik.length === 0 ? (
-             <p className="text-sm font-medium text-slate-400">Grafik Kosong - Menunggu Data Historis</p>
+            <p className="text-sm font-medium text-slate-400">Grafik Kosong - Menunggu Data Historis</p>
           ) : (
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={dataGrafik} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                 <XAxis dataKey="tanggal" tick={{ fontSize: 12, fill: '#64748b' }} axisLine={false} tickLine={false} />
-                <YAxis domain={['auto', 'auto']} tick={{ fontSize: 12, fill: '#64748b' }} axisLine={false} tickLine={false} tickFormatter={(value) => `Rp${(value/1000).toLocaleString('id-ID')}k`} />
+                <YAxis domain={['auto', 'auto']} tick={{ fontSize: 12, fill: '#64748b' }} axisLine={false} tickLine={false} tickFormatter={(value) => `Rp${(value / 1000).toLocaleString('id-ID')}k`} />
                 <Tooltip contentStyle={{ backgroundColor: '#ffffff', borderRadius: '8px', border: '1px solid #e2e8f0' }} formatter={(value, name) => [`Rp ${Number(value).toLocaleString('id-ID')}`, name]} />
                 <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', paddingTop: '20px', color: '#475569' }} />
-                
+
                 {/* Garis Harga Aktual: Abu-abu Tua */}
-                <Line 
-                  type="monotone" 
-                  dataKey="aktual" 
-                  name="Harga Aktual" 
-                  stroke="#1F2937" 
-                  strokeWidth={4} 
-                  dot={{ fill: '#1F2937', strokeWidth: 2, r: 5 }} 
-                  activeDot={{ r: 8 }} 
+                <Line
+                  type="monotone"
+                  dataKey="aktual"
+                  name="Harga Aktual"
+                  stroke="#1F2937"
+                  strokeWidth={4}
+                  dot={{ fill: '#1F2937', strokeWidth: 2, r: 5 }}
+                  activeDot={{ r: 8 }}
                   connectNulls={true}
                 />
 
                 {/* Garis Harga Prediksi: Kuning Emas Putus-putus */}
-                <Line 
-                  type="monotone" 
-                  dataKey="prediksi" 
-                  name="Harga Prediksi" 
-                  stroke="#F59E0B" 
-                  strokeWidth={3} 
-                  strokeDasharray="5 5" 
-                  dot={{ fill: '#F59E0B', r: 4 }} 
-                  activeDot={{ r: 6 }} 
+                <Line
+                  type="monotone"
+                  dataKey="prediksi"
+                  name="Harga Prediksi"
+                  stroke="#F59E0B"
+                  strokeWidth={3}
+                  strokeDasharray="5 5"
+                  dot={{ fill: '#F59E0B', r: 4 }}
+                  activeDot={{ r: 6 }}
                   connectNulls={true}
                 />
               </LineChart>
@@ -249,7 +248,7 @@ export default function RealTime() {
             )}
           </ul>
         </div>
-        
+
         {/* METODOLOGI */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
           <div className="flex items-center gap-2 mb-5">
