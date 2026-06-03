@@ -72,6 +72,7 @@ def insert_prediction(cursor, data):
         f"{data['target_date']}",
         LOG_FILE
     )
+        return None 
 
     prediction_id = row[0]
 

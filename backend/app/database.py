@@ -36,7 +36,19 @@ def connect_db():
                 raise Exception("Aplikasi menyerah: Gagal terhubung ke PostgreSQL setelah 5 kali percobaan.")
             # Menunggu 2 detik sebelum mencoba mengetok pintu database lagi
             time.sleep(2)
-
+            
+def log(message, log_file=None):
+    timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
+    line = f"[{timestamp}] {message}"
+    print(line)
+    if log_file:
+        try:
+            os.makedirs(os.path.dirname(log_file), exist_ok=True)
+            with open(log_file, "a") as f:
+                f.write(line + "\n")
+        except Exception:
+            pass
+        
 # ==============================================================================
 # FITUR TES MANDIRI (Hanya berjalan jika file database.py ini di-run langsung)
 # ==============================================================================
