@@ -1,15 +1,12 @@
 services:
-
   backend:
     build: ./backend
+    image: atikafarah107/goldsight-backend:latest
     ports:
-      - "8000:8000"
-    env_file:
-      - ./backend/.env
+    - "8000:8000"
 
   frontend:
     build: ./frontend
+    image: atikafarah107/goldsight-frontend:latest
     ports:
-      - "5173:5173"
-    depends_on:
-      - backend
+    - "5173:5173"
